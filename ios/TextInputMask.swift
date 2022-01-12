@@ -1,10 +1,9 @@
 import Foundation
-import InputMask
 
 @objc(RNMoneyInput)
-class TextInputMask: NSObject, RCTBridgeModule, MaskedTextFieldDelegateListener {
+class TextInputMask: NSObject, RCTBridgeModule, MoneyInputListener {
     static func moduleName() -> String {
-        "TextInputMask"
+        "MoneyInput"
     }
 
     @objc static func requiresMainQueueSetup() -> Bool {
@@ -16,40 +15,32 @@ class TextInputMask: NSObject, RCTBridgeModule, MaskedTextFieldDelegateListener 
     }
 
     var bridge: RCTBridge!
-    var masks: [String: MaskedTextFieldDelegate] = [:]
-
-    var listeners: [String: MaskedTextFieldDelegateListener] = [:]
-
-    @objc(mask:inputValue:autocomplete:resolver:rejecter:)
-    func mask(mask: String, inputValue: String, autocomplete: Bool, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        let output = RNMask.maskValue(text: inputValue, format: mask, autcomplete: autocomplete)
-        resolve(output)
+    var masks: [String: MoneyInputDelegate] = [:]
+    var listeners: [String: MoneyInputListener] = [:]
+    
+    @objc(formatMoney:)
+    func formatMoney(value: NSNumber) -> String {
+        let (format, _) = MoneyMask.mask(value: value.doubleValue, locale: "en_US")
+        return format
     }
-
-    @objc(unmask:inputValue:autocomplete:resolver:rejecter:)
-    func unmask(mask: String, inputValue: String, autocomplete: Bool, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        let output = RNMask.unmaskValue(text: inputValue, format: mask, autocomplete: autocomplete)
-        resolve(output)
+    
+    @objc(extractValue:)
+    func extractValue(value: NSString) -> NSNumber {
+        return NSNumber(value: MoneyMask.unmask(input: String(value)))
     }
-
-    @objc(setMask:mask:options:)
-    func setMask(reactNode: NSNumber, mask: String, options: NSDictionary) {
+    
+    @objc(setMask:options:)
+    func setMask(reactNode: NSNumber, options: NSDictionary) {
         bridge.uiManager.addUIBlock { (uiManager, viewRegistry) in
             DispatchQueue.main.async {
                 guard let view = viewRegistry?[reactNode] as? RCTBaseTextInputView else { return }
                 let textView = view.backedTextInputView as! RCTUITextField
-                let autocomplete = options["autocomplete"] as? Bool ?? true
-                let autoskip = options["autoskip"] as? Bool ?? false
-                let affineFormats = options["affineFormats"] as? [String] ?? []
-                let customNotations = (options["customNotations"] as? [[String:Any]])?.map { $0.toNotation() } ?? []
-                let rightToLeft = options["rightToLeft"] as? Bool ?? false
-                var affinityCalculationStrategy = AffinityCalculationStrategy.forString(rawValue: options["affinityCalculationStrategy"] as? String)
-                
-                let maskedDelegate = MaskedTextFieldDelegate(primaryFormat: mask, autocomplete: autocomplete, autoskip: autoskip, affineFormats: affineFormats, customNotations: customNotations) { (_, value, complete) in
-                    // trigger onChange directly to avoid trigger a second evaluation in native code (causes issue with some input masks like [00] {/} [00]
+            
+                let locale = options["locale"] as? String
+                let maskedDelegate = MoneyInputDelegate(localeIdentifier: locale) { (_, value) in
                     let textField = textView as! UITextField
                     view.onChange?([
-                        "text": textField.text,
+                        "text": value,
                         "target": view.reactTag,
                         "eventCount": view.nativeEventCount,
                     ])
@@ -65,33 +56,4 @@ class TextInputMask: NSObject, RCTBridgeModule, MaskedTextFieldDelegateListener 
     }
 }
 
-class MaskedRCTBackedTextFieldDelegateAdapter : RCTBackedTextFieldDelegateAdapter, MaskedTextFieldDelegateListener {}
-
-extension Dictionary where Key == String, Value == Any {
-    func toNotation() -> Notation {
-        let character = Array((self["character"] as! String))[0]
-        let characterSet = CharacterSet(charactersIn: (self["characterSet"] as! String))
-        let isOptional = self["isOptional"] as! Bool
-        return Notation(character: character, characterSet: characterSet, isOptional: isOptional)
-    }
-}
-
-extension AffinityCalculationStrategy {
-    static func forString(rawValue: String?) -> AffinityCalculationStrategy? {
-        if (rawValue == nil) {
-            return nil
-        }
-        switch rawValue {
-            case "WHOLE_STRING":
-                return AffinityCalculationStrategy.wholeString
-            case "PREFIX":
-                return AffinityCalculationStrategy.prefix
-            case "CAPACITY":
-                return AffinityCalculationStrategy.capacity
-            case "EXTRACTED_VALUE_CAPACITY":
-                return AffinityCalculationStrategy.extractedValueCapacity
-            default:
-                return nil
-        }
-    }
-}
+class MaskedRCTBackedTextFieldDelegateAdapter : RCTBackedTextFieldDelegateAdapter, MoneyInputListener {}

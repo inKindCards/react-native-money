@@ -25,10 +25,13 @@ To fix this issue try these steps:
 }
 
 type MaskOperations = {
-  setMask: (reactNode: Number) => void
+  setMask: (reactNode: Number, options: any) => void
+  formatMoney: (value: Number, locale?: string) => string
+  extractValue: (label: string) => number
 }
 
 type MoneyInputProps = TextInputProps & {
+  locale?: string
   onChangeText?: (value: number, label: string) => void
 }
 
@@ -38,7 +41,7 @@ interface Handles {
 }
 
 const MoneyInput = forwardRef<Handles, MoneyInputProps>(
-  ({defaultValue, value, multiline, onChangeText, ...rest}, ref) => {
+  ({defaultValue, value, onChangeText, locale, ...rest}, ref) => {
     // Keep a reference to the actual text input
     const input = useRef<TextInput>(null)
     const [label, setLabel] = useState<string>()
@@ -46,8 +49,8 @@ const MoneyInput = forwardRef<Handles, MoneyInputProps>(
     // Convert TextInput to MoneyInput native type
     useEffect(() => {
       const nodeId = findNodeHandle(input.current)
-      if (nodeId) RNMoneyInput.setMask(nodeId)
-    }, [])
+      if (nodeId) RNMoneyInput.setMask(nodeId, { locale })
+    }, [locale])
 
     // Create a false ref interface
     useImperativeHandle(ref, () => ({
@@ -66,6 +69,7 @@ const MoneyInput = forwardRef<Handles, MoneyInputProps>(
         value={label}
         onChangeText={async label => {
           setLabel(label)
+          onChangeText?.(RNMoneyInput.extractValue(label), label)
         }}
       />
     )

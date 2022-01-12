@@ -52,6 +52,5 @@ repositories {
 
 dependencies {
     implementation 'com.facebook.react:react-native:+'
-    implementation 'com.redmadrobot:input-mask-android:6.0.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:${project.ext.kotlinVersion}"
 }
