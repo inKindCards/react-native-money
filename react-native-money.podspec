@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
     s.license          = package['license']
     s.author           = package['author']
     s.license          = { :type => 'MIT', :file => 'LICENSE' }
-    s.source           = { :git => 'https://github.com/inkind/react-native-money.git', :tag => s.version.to_s }
+    s.source           = { :git => 'https://github.com/inKindCards/react-native-money.git', :tag => s.version.to_s }
     s.platform      = :ios, "10.0"
     s.source_files  = "ios/**/*.{h,m,swift}"
     s.requires_arc  = true

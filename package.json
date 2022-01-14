@@ -1,7 +1,7 @@
 {
   "name": "react-native-money",
   "version": "1.0.0",
-  "description": "Text input field that allows currency input with a right to left input style",
+  "description": "A fully native TextInput component that allows currency input with a right to left text aligment",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "repository": {

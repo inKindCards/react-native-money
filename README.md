@@ -4,7 +4,7 @@ Text input field that allows currency input with a right to left input style
 <a href="https://www.npmjs.org/package/react-native-money">
   <img src="https://badge.fury.io/js/react-native-money.svg" alt="NPM package version." />
 </a>
-<a href="https://github.com/inkind/react-native-money/blob/master/LICENSE">
+<a href="https://github.com/inKindCards/react-native-money/blob/master/LICENSE">
   <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license." />
 </a>
 
