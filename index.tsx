@@ -31,6 +31,8 @@ type MaskOperations = {
 }
 
 type MoneyInputProps = TextInputProps & {
+  value?: number
+  defaultValue?: number
   locale?: string
   onChangeText?: (value: number, label: string) => void
 }
@@ -42,9 +44,16 @@ interface Handles {
 
 const MoneyInput = forwardRef<Handles, MoneyInputProps>(
   ({defaultValue, value, onChangeText, locale, ...rest}, ref) => {
+    // Create a default input
+    const defaultMoney = (value ?? defaultValue)
+    const defaultLabel = defaultMoney ? RNMoneyInput.formatMoney(
+      defaultMoney,
+      locale
+    ) : ''
+
     // Keep a reference to the actual text input
     const input = useRef<TextInput>(null)
-    const [label, setLabel] = useState<string>()
+    const [label, setLabel] = useState<string>(defaultLabel)
 
     // Convert TextInput to MoneyInput native type
     useEffect(() => {
