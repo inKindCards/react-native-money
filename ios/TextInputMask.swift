@@ -19,8 +19,8 @@ class TextInputMask: NSObject, RCTBridgeModule, MoneyInputListener {
     var listeners: [String: MoneyInputListener] = [:]
     
     @objc(formatMoney:locale:)
-    func formatMoney(value: NSNumber, locale: NSNumber?) -> String {
-        let (format, _) = MoneyMask.mask(value: value.doubleValue, locale: "en_US")
+    func formatMoney(value: NSNumber, locale: NSString?) -> String {
+        let (format, _) = MoneyMask.mask(value: value.doubleValue, locale: String(locale ?? "en_US"))
         return format
     }
     

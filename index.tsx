@@ -13,7 +13,7 @@ import {
   TextInputProps,
 } from 'react-native'
 
-const {RNMoneyInput} = NativeModules as {RNMoneyInput: MaskOperations}
+const {RNMoneyInput} = NativeModules as {RNMoneyInput: NativeExports}
 export const {
   initializeMoneyInput,
   extractValue,
@@ -29,7 +29,7 @@ To fix this issue try these steps:
 `)
 }
 
-type MaskOperations = {
+type NativeExports = {
   initializeMoneyInput: (reactNode: Number, options: any) => void
   formatMoney: (value: Number, locale?: string) => string
   extractValue: (label: string) => number
@@ -48,7 +48,7 @@ interface Handles {
 }
 
 const MoneyInput = forwardRef<Handles, MoneyInputProps>(
-  ({defaultValue, value, onChangeText, locale, ...rest}, ref) => {
+  ({defaultValue, value, onChangeText, locale, onFocus, ...rest}, ref) => {
     // Create a default input
     const defaultMoney = (value ?? defaultValue)
     const defaultLabel = defaultMoney ? formatMoney(
@@ -58,7 +58,18 @@ const MoneyInput = forwardRef<Handles, MoneyInputProps>(
 
     // Keep a reference to the actual text input
     const input = useRef<TextInput>(null)
+    const [rawValue, setValue] = useState<number|undefined>(defaultMoney)
     const [label, setLabel] = useState<string>(defaultLabel)
+
+    // Keep numeric prop in sync with out state
+    useEffect(() => {
+      if (value != null && rawValue != value) {
+        setLabel(formatMoney(
+          value,
+          locale
+        ))
+      }
+    }, [value])
 
     // Convert TextInput to MoneyInput native type
     useEffect(() => {
@@ -81,9 +92,16 @@ const MoneyInput = forwardRef<Handles, MoneyInputProps>(
         {...rest}
         ref={input}
         value={label}
+        onFocus={e => {
+          setValue(0)
+          setLabel(formatMoney(0, locale));
+          onFocus?.(e)
+        }}
         onChangeText={async label => {
+          const computedValue = extractValue(label)
           setLabel(label)
-          onChangeText?.(extractValue(label), label)
+          setValue(computedValue)
+          onChangeText?.(computedValue, label)
         }}
       />
     )
