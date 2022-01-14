@@ -25,7 +25,7 @@
 
   <h3 align="center">React Native Money</h3>
   <p align="center">
-    A fully native TextInput component that allows multilingual currency input <br />with a right to left text aligment.
+    A fully native TextInput component that allows multilingual currency input <br />with a right to left text alignment.
     <br /><br />
     <a href="https://github.com/inKindCards/react-native-money">View Library</a>
     ·
@@ -44,7 +44,7 @@ with React Native, The only difference is that the `value` prop accepts a `Numbe
 <br />
 
 ```
-npm install @inKind/react-native-money
+npm install @inKindCards/react-native-money
 npx pod-install
 ```
 
@@ -68,17 +68,17 @@ npx pod-install
   	```
 3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
   	```
-      compile project(':react-native-money')
+    compile project(':react-native-money')
   	```
 </details>
 
 ## Usage
 You use the MoneyInput component like a normal [TextInput](https://reactnative.dev/docs/textinput) from the React Native library with the exception that you pass a number to the `value` prop.
-You can also pass a locale idenitifer which is composed of the language along with the country, this in turn will change the how the currency is formatted, All possible locales can be read about here: [Currency Locale Reference](https://docs.oracle.com/cd/E23824_01/html/E26033/glset.html)
+You can also pass a locale idenitifer which is composed of the language along with the country, this in turn will change the how the currency is formatted, All possible locales can be read about here: [Currency Locale Reference](https://docs.oracle.com/cd/E23824_01/html/E26033/glset.html).
 
 ```
+import {useState} from 'react'
 import MoneyInput from 'react-native-money'
-
 
 const App = () => {
   const [bill, setBill] = useState<number>()
