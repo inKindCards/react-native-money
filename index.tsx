@@ -14,6 +14,11 @@ import {
 } from 'react-native'
 
 const {RNMoneyInput} = NativeModules as {RNMoneyInput: MaskOperations}
+export const {
+  initializeMoneyInput,
+  extractValue,
+  formatMoney,
+} = RNMoneyInput
 
 if (!RNMoneyInput) {
   throw new Error(`NativeModule: RNMoneyInput is null.
@@ -25,7 +30,7 @@ To fix this issue try these steps:
 }
 
 type MaskOperations = {
-  setMask: (reactNode: Number, options: any) => void
+  initializeMoneyInput: (reactNode: Number, options: any) => void
   formatMoney: (value: Number, locale?: string) => string
   extractValue: (label: string) => number
 }
@@ -46,7 +51,7 @@ const MoneyInput = forwardRef<Handles, MoneyInputProps>(
   ({defaultValue, value, onChangeText, locale, ...rest}, ref) => {
     // Create a default input
     const defaultMoney = (value ?? defaultValue)
-    const defaultLabel = defaultMoney ? RNMoneyInput.formatMoney(
+    const defaultLabel = defaultMoney ? formatMoney(
       defaultMoney,
       locale
     ) : ''
@@ -58,7 +63,7 @@ const MoneyInput = forwardRef<Handles, MoneyInputProps>(
     // Convert TextInput to MoneyInput native type
     useEffect(() => {
       const nodeId = findNodeHandle(input.current)
-      if (nodeId) RNMoneyInput.setMask(nodeId, { locale })
+      if (nodeId) initializeMoneyInput(nodeId, { locale })
     }, [locale])
 
     // Create a false ref interface
@@ -78,7 +83,7 @@ const MoneyInput = forwardRef<Handles, MoneyInputProps>(
         value={label}
         onChangeText={async label => {
           setLabel(label)
-          onChangeText?.(RNMoneyInput.extractValue(label), label)
+          onChangeText?.(extractValue(label), label)
         }}
       />
     )

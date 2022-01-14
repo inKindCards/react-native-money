@@ -31,7 +31,7 @@ class RNMoneyInputModule(private val context: ReactApplicationContext) : ReactCo
     }
 
     @ReactMethod
-    fun setMask(tag: Int, options: ReadableMap) {
+    fun initializeMoneyInput(tag: Int, options: ReadableMap) {
         // We need to use prependUIBlock instead of addUIBlock since subsequent UI operations in
         // the queue might be removing the view we're looking to update.
         context.getNativeModule(UIManagerModule::class.java)!!.prependUIBlock { nativeViewHierarchyManager ->

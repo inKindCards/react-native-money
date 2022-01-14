@@ -18,8 +18,8 @@ class TextInputMask: NSObject, RCTBridgeModule, MoneyInputListener {
     var masks: [String: MoneyInputDelegate] = [:]
     var listeners: [String: MoneyInputListener] = [:]
     
-    @objc(formatMoney:)
-    func formatMoney(value: NSNumber) -> String {
+    @objc(formatMoney:locale:)
+    func formatMoney(value: NSNumber, locale: NSNumber?) -> String {
         let (format, _) = MoneyMask.mask(value: value.doubleValue, locale: "en_US")
         return format
     }
@@ -29,8 +29,8 @@ class TextInputMask: NSObject, RCTBridgeModule, MoneyInputListener {
         return NSNumber(value: MoneyMask.unmask(input: String(value)))
     }
     
-    @objc(setMask:options:)
-    func setMask(reactNode: NSNumber, options: NSDictionary) {
+    @objc(initializeMoneyInput:options:)
+    func initializeMoneyInput(reactNode: NSNumber, options: NSDictionary) {
         bridge.uiManager.addUIBlock { (uiManager, viewRegistry) in
             DispatchQueue.main.async {
                 guard let view = viewRegistry?[reactNode] as? RCTBaseTextInputView else { return }
