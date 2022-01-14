@@ -1,10 +1,10 @@
-# react-native-money-input
+# react-native-money
 Text input field that allows currency input with a right to left input style
 
-<a href="https://www.npmjs.org/package/react-native-money-input">
-  <img src="https://badge.fury.io/js/react-native-money-input.svg" alt="NPM package version." />
+<a href="https://www.npmjs.org/package/react-native-money">
+  <img src="https://badge.fury.io/js/react-native-money.svg" alt="NPM package version." />
 </a>
-<a href="https://github.com/react-native-community/react-native-money-input/blob/master/LICENSE">
+<a href="https://github.com/inkind/react-native-money/blob/master/LICENSE">
   <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license." />
 </a>
 
@@ -47,7 +47,7 @@ No need to do anything.
 
 ### Link
 ```bash
-react-native link react-native-money-input
+react-native link react-native-money
 ```
 
 **iOS only:** you have to drag and drop `InputMask.framework` to `Embedded Binaries` in General tab of Target
@@ -59,7 +59,7 @@ react-native link react-native-money-input
 #### iOS
 
 1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-2. Go to `node_modules` ➜ `react-native-money-input` and add `RNMoneyInput.xcodeproj`
+2. Go to `node_modules` ➜ `react-native-money` and add `RNMoneyInput.xcodeproj`
 3. In XCode, in the project navigator, select your project. Add `libRNMoneyInput.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
 4. Run your project (`Cmd+R`)
 
@@ -70,12 +70,12 @@ react-native link react-native-money-input
   - Add `new RNMoneyInputPackage()` to the list returned by the `getPackages()` method
 2. Append the following lines to `android/settings.gradle`:
   	```
-  	include ':react-native-money-input'
-  	project(':react-native-money-input').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-money-input/android')
+  	include ':react-native-money'
+  	project(':react-native-money').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-money/android')
   	```
 3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
   	```
-      compile project(':react-native-money-input')
+      compile project(':react-native-money')
   	```
 </details>
 
@@ -88,7 +88,7 @@ TBC
 
 Make sure to [mock](https://jestjs.io/docs/en/manual-mocks#mocking-node-modules) the following to `jest.setup.js`:
 ```javascript
-jest.mock('react-native-money-input', () => ({
+jest.mock('react-native-money', () => ({
     default: jest.fn(),
 }))
 ```

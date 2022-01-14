@@ -1,12 +1,12 @@
 {
-  "name": "react-native-money-input",
+  "name": "react-native-money",
   "version": "1.0.0",
   "description": "Text input field that allows currency input with a right to left input style",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/inKindCards/react-native-money-input"
+    "url": "https://github.com/inKindCards/react-native-money"
   },
   "keywords": [
     "react",
@@ -39,7 +39,7 @@
   },
   "author": "Nathan Horrigan",
   "bugs": {
-    "url": "https://github.com/inKindCards/react-native-money-input"
+    "url": "https://github.com/inKindCards/react-native-money"
   },
-  "homepage": "https://github.com/inKindCards/react-native-money-input"
+  "homepage": "https://github.com/inKindCards/react-native-money"
 }
