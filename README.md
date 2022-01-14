@@ -27,7 +27,7 @@
   <p align="center">
     A fully native TextInput component that allows multilingual currency input <br />with a right to left text alignment.
     <br /><br />
-    <a href="https://github.com/inKindCards/react-native-money">View Library</a>
+    <a href="https://www.npmjs.com/package/@inkindcards/react-native-money">View Library</a>
     ·
     <a href="https://github.com/inKindCards/react-native-money/issues">Report Bug</a>
     ·
@@ -44,7 +44,7 @@ with React Native, The only difference is that the `value` prop accepts a `Numbe
 <br />
 
 ```
-npm install @inKindCards/react-native-money
+npm install @inkindcards/react-native-money
 npx pod-install
 ```
 

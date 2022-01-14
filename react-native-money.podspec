@@ -10,7 +10,7 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
 Pod::Spec.new do |s|
-    s.name             = package['name']
+    s.name             = "react-native-money"
     s.version          = package['version']
     s.summary          = package['description']
     s.description      = package['description']
@@ -25,5 +25,4 @@ Pod::Spec.new do |s|
     s.swift_version = "5.0"
     s.dependency 'React-Core'
     s.dependency 'React-RCTText'
-    s.dependency 'InputMask', '~> 6.1.0'
   end

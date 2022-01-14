@@ -1,12 +1,12 @@
 {
-  "name": "react-native-money",
-  "version": "1.0.0",
+  "name": "@inkindcards/react-native-money",
+  "version": "1.0.1",
   "description": "A fully native TextInput component that allows currency input with a right to left text aligment",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/inKindCards/react-native-money"
+    "url": "git+https://github.com/inKindCards/react-native-money.git"
   },
   "keywords": [
     "react",
@@ -41,5 +41,7 @@
   "bugs": {
     "url": "https://github.com/inKindCards/react-native-money"
   },
-  "homepage": "https://github.com/inKindCards/react-native-money"
+  "homepage": "https://github.com/inKindCards/react-native-money",
+  "dependencies": {},
+  "license": "MIT"
 }
