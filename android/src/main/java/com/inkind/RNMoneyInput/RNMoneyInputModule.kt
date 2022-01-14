@@ -111,8 +111,12 @@ open class MoneyMask {
          fun unmask(text: String): Double {
              val re = "[^0-9]".toRegex()
              val numbers = re.replace(text, "")
-             val cents = numbers.toDouble()
-             return cents / 100
+             if (numbers.isNotEmpty()) {
+                 val cents = numbers.toDouble()
+                 return cents / 100
+             }
+
+             return 0 as Double
          }
 
          fun mask(value: Double, locale: String? = "en_US"): String {
