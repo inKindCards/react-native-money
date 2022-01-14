@@ -56,7 +56,7 @@
     "ansi-gray": "^0.1.1",
     "ansi-cyan": "^0.1.1",
     "ansi-red": "^0.1.1",
-    "ansi-regex": "^4.1.0",
+    "ansi-regex": "^5.0.1",
     "ansi-styles": "^3.2.1",
     "anymatch": "^2.0.0",
     "ansi-wrap": "^0.1.0",
