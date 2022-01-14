@@ -131,4 +131,4 @@ This means that releases within the same MAJOR version are always backwards comp
 [issues-shield]: https://img.shields.io/github/issues/inKindCards/react-native-money.svg?style=for-the-badge
 [issues-url]: https://github.com/inKindCards/react-native-money/issues
 [license-shield]: https://img.shields.io/github/license/inKindCards/react-native-money.svg?style=for-the-badge
-[license-url]: https://github.com/inKindCards/react-native-money/blob/master/LICENSE.txt
+[license-url]: https://github.com/inKindCards/react-native-money/blob/master/LICENSE
