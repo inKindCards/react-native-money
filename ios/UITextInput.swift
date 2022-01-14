@@ -3,7 +3,7 @@
 //  RNMoneyInput
 //
 //  Created by Nathan Horrigan on 14/01/2022.
-//  Copyright © 2022 inKindCards. All rights reserved.
+//  Copyright © 2022 inKindCards, Inc. All rights reserved.
 //
 
 import UIKit
