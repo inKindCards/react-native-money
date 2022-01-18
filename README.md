@@ -45,7 +45,13 @@ with React Native, The only difference is that the `value` prop accepts a `Numbe
 
 ```
 npm install @inkindcards/react-native-money
-npx pod-install
+```
+
+### iOS Installation:
+Make sure to add the following to your `Podfile` before running `npx pod-install`:
+
+```
+pod 'React-RCTText', :path => '../node_modules/react-native/Libraries/Text', :modular_headers => true
 ```
 
 ## Manual Installation
