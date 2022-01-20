@@ -15,6 +15,7 @@ import java.text.NumberFormat
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.pow
 
 fun ReadableMap.string(key: String): String? = this.getString(key)
 class RNMoneyInputModule(private val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
@@ -26,8 +27,8 @@ class RNMoneyInputModule(private val context: ReactApplicationContext) : ReactCo
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    fun extractValue(label: String): Double {
-        return MoneyMask.unmask(label)
+    fun extractValue(label: String, locale: String?): Double {
+        return MoneyMask.unmask(label, locale)
     }
 
     @ReactMethod
@@ -108,21 +109,31 @@ open class MoneyMask {
              return Locale(language, country)
          }
 
-         fun unmask(text: String): Double {
+         fun getFormatter(localeIdentifer: String?): NumberFormat {
+             val locale = getLocale(localeIdentifer)
+             val format: NumberFormat = NumberFormat.getCurrencyInstance(locale)
+             return format
+         }
+
+         fun unmask(text: String, locale: String?): Double {
              val re = "[^0-9]".toRegex()
              val numbers = re.replace(text, "")
              if (numbers.isNotEmpty()) {
-                 val cents = numbers.toDouble()
-                 return cents / 100
+                 val value = numbers.toDouble()
+                 val formatter = getFormatter(locale)
+                 if (formatter.maximumFractionDigits > 0) {
+                     val degrees = formatter.maximumFractionDigits.toDouble()
+                     return (value/ 10.0.pow(degrees))
+                 }
+
+                 return value
              }
 
-             return 0 as Double
+             return 0.0
          }
 
-         fun mask(value: Double, locale: String? = "en_US"): String {
-             val localeObj = getLocale(locale)
-             val format: NumberFormat = NumberFormat.getCurrencyInstance(localeObj)
-             format.maximumFractionDigits = 2
+         fun mask(value: Double, locale: String?): String {
+             val format = getFormatter(locale)
              return format.format(value)
          }
      }
@@ -171,8 +182,8 @@ open class MoneyTextWatcher(
 
     override fun onTextChanged(text: CharSequence, cursorPosition: Int, before: Int, count: Int) {
         val inputText = text.toString()
-        val inputCents = MoneyMask.unmask(inputText)
-        val maskedText = MoneyMask.mask(inputCents, locale ?: MoneyMask.defaultLocale)
+        val inputCents = MoneyMask.unmask(inputText, locale)
+        val maskedText = MoneyMask.mask(inputCents, locale)
         val isSuffixSymbol = maskedText.last().isDigit() == false
         this.caretPosition = maskedText.length + 1
 

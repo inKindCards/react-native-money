@@ -32,7 +32,7 @@ To fix this issue try these steps:
 type NativeExports = {
   initializeMoneyInput: (reactNode: Number, options: any) => void
   formatMoney: (value: Number, locale?: string) => string
-  extractValue: (label: string) => number
+  extractValue: (label: string, locale?: string) => number
 }
 
 type MoneyInputProps = TextInputProps & {
@@ -101,7 +101,7 @@ const MoneyInput = forwardRef<Handles, MoneyInputProps>(
           onFocus?.(e)
         }}
         onChangeText={async label => {
-          const computedValue = extractValue(label)
+          const computedValue = extractValue(label, locale)
           setLabel(label)
           setValue(computedValue)
           onChangeText?.(computedValue, label)

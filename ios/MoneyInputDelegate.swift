@@ -91,7 +91,7 @@ open class MoneyInputDelegate: NSObject, UITextFieldDelegate {
         let updatedText: String = replaceCharacters(inText: originalString, range: range, withCharacters: string)
         
         // Convert text input to formatted string
-        let value = MoneyMask.unmask(input: updatedText)
+        let value = MoneyMask.unmask(input: updatedText, locale: self.localeIdentifier)
         let (priceString, formatter) = MoneyMask.mask(value: value, locale: self.localeIdentifier)
         
         // Create reference to end of number section of string
@@ -175,22 +175,36 @@ open class MoneyInputDelegate: NSObject, UITextFieldDelegate {
 }
 
 class MoneyMask {
+    // Get the correct formatter using the provided options
+    static func getFormatter(locale: String) -> NumberFormatter {
+        let currencyFormatter = NumberFormatter()
+        currencyFormatter.usesGroupingSeparator = true
+        currencyFormatter.numberStyle = .currency
+        currencyFormatter.locale = Locale(identifier: locale)
+        return currencyFormatter
+    }
+    
     // Converts a malformed input string into a double representation of money
-    static func unmask(input: String) -> Double {
+    static func unmask(input: String, locale: String) -> Double {
         // Remove any non-numeric chars and convert to cents in a double type
         let numbers = input.filter("0123456789".contains)
-        let cents = Double(numbers) ?? 0
-        return (cents / 100).round(to: 2)
+        let currencyFormatter = getFormatter(locale: locale)
+        let value = Double(numbers) ?? Double(0)
+        
+        // Add optional support for fractional digits
+        if currencyFormatter.maximumFractionDigits > 0 {
+            let degrees = currencyFormatter.maximumFractionDigits
+            return (value / pow(Double(10), Double(degrees))).round(to: degrees)
+        }
+        
+        return value
     }
     
     // Converts a double of monet into a pretty formatted string
     static func mask(value: Double, locale: String) -> (String, NumberFormatter)  {
         // Create a currency formmater from locale
-        let currencyFormatter = NumberFormatter()
-        currencyFormatter.usesGroupingSeparator = true
-        currencyFormatter.numberStyle = .currency
-        currencyFormatter.locale = Locale(identifier: locale)
-
+        let currencyFormatter = getFormatter(locale: locale)
+        
         // We'll force unwrap with the !, if you've got defined data you may need more error checking
         return (currencyFormatter.string(from: NSNumber(value: value))!, currencyFormatter)
     }
