@@ -24,9 +24,9 @@ class TextInputMask: NSObject, RCTBridgeModule, MoneyInputListener {
         return format
     }
     
-    @objc(extractValue:)
-    func extractValue(value: NSString) -> NSNumber {
-        return NSNumber(value: MoneyMask.unmask(input: String(value)))
+    @objc(extractValue:locale:)
+    func extractValue(value: NSString, locale: NSString?) -> NSNumber {
+        return NSNumber(value: MoneyMask.unmask(input: String(value), locale: String(locale ?? "en_US")))
     }
     
     @objc(initializeMoneyInput:options:)
