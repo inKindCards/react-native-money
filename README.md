@@ -84,7 +84,7 @@ You can also pass a locale idenitifer which is composed of the language along wi
 
 ```
 import {useState} from 'react'
-import MoneyInput from 'react-native-money'
+import MoneyInput from '@inkindcards/react-native-money'
 
 const App = () => {
   const [bill, setBill] = useState<number>()
