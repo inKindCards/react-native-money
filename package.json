@@ -1,6 +1,6 @@
 {
   "name": "@inkindcards/react-native-money",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A fully native TextInput component that allows currency input with a right to left text aligment",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",

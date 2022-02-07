@@ -69,8 +69,8 @@ pod 'React-RCTText', :path => '../node_modules/react-native/Libraries/Text', :mo
   - Add `new RNMoneyInputPackage()` to the list returned by the `getPackages()` method
 2. Append the following lines to `android/settings.gradle`:
   	```
-  	include ':react-native-money'
-  	project(':react-native-money').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-money/android')
+  	include ':inkindcards_react-native-money'
+  	project(':inkindcards_react-native-money').projectDir = new File(rootProject.projectDir, 	'../node_modules/@inkindcards/react-native-money/android')
   	```
 3. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
   	```
