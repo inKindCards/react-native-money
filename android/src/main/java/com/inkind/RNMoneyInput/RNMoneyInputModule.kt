@@ -64,12 +64,7 @@ internal class MoneyTextListener(
     override fun onTextChanged(text: CharSequence, cursorPosition: Int, before: Int, count: Int) {
         val newText = text.substring(cursorPosition, cursorPosition + count)
         val oldText = previousText?.substring(cursorPosition, cursorPosition + before)
-        // temporarily disable autocomplete if updated text is same as previous text,
-        // this is to prevent autocomplete when deleting as value is set multiple times from RN
-        val isDuplicatePayload = count == before && newText == oldText
-        if (isDuplicatePayload == false) {
-            super.onTextChanged(text, cursorPosition, before, count)
-        }
+        super.onTextChanged(text, cursorPosition, before, count)
     }
 
     override fun onFocusChange(view: View?, hasFocus: Boolean) {
