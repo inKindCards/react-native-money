@@ -50,7 +50,7 @@ interface Handles {
 const MoneyInput = forwardRef<Handles, MoneyInputProps>(
   ({defaultValue, value, onChangeText, locale, onFocus, ...rest}, ref) => {
     // Create a default input
-    const [ defaultMoney ] = useState(value ?? defaultValue)
+    const [ defaultMoney ] = useState(defaultValue ?? value)
     const [ defaultLabel ] = useState(defaultMoney != null ? formatMoney(
       defaultMoney,
       locale
@@ -63,13 +63,11 @@ const MoneyInput = forwardRef<Handles, MoneyInputProps>(
 
     // Keep numeric prop in sync with out state
     useEffect(() => {
-      if (value != null && rawValue != value) {
-        setLabel(formatMoney(
-          value,
-          locale
-        ))
-      }
-    }, [value])
+        if (value != null && value != rawValue) {
+            setValue(value)
+            setLabel(formatMoney(value, locale));
+        }
+    }, [value, rawValue])
 
     // Convert TextInput to MoneyInput native type
     useEffect(() => {
