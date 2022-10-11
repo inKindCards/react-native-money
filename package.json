@@ -29,7 +29,7 @@
     "@react-native-community/eslint-config": "0.0.2",
     "@types/react": "^16.9.50",
     "@types/react-native": "^0.63.45",
-    "react-native": "^0.64.1",
+    "react-native": "^0.70.2",
     "tslib": "^2.1.0",
     "typescript": "^4.5.4",
     "prettier": "^2.5.1"
