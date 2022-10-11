@@ -1,5 +1,5 @@
 ## Changelog
 
-### Version 2.0.0
+### Version 1.0.5
 
-* Updated the headers in `RNMoneyInput.m` file to work with pods integration
+* Fix issue where calling .focus() would cause the cursor to sometimes goes to start of field

@@ -236,25 +236,36 @@ open class MoneyTextWatcher(
         this.caretPosition = min(this.caretPosition, endOfInput)
     }
 
-    override fun onFocusChange(view: View?, hasFocus: Boolean) {
-        val content = field.get()?.text.toString()
-        if (hasFocus && content?.length > 0) {
-            val isSuffixSymbol = content.last().isDigit() == false
-            if (isSuffixSymbol) {
-                this.caretPosition = min(this.caretPosition,content.length - 2)
+    fun tidyCaretPosition() {
+        try {
+            val content = field.get()?.text.toString()
+            if (content?.length > 0) {
+                val isSuffixSymbol = content.last().isDigit() == false
+                if (isSuffixSymbol) {
+                    this.caretPosition = min(this.caretPosition,content.length - 1)
+                }
+
+                if (content == "$0.00") {
+                    this.caretPosition = 5
+                } else if (this.caretPosition == 0) {
+                    this.caretPosition = 1
+                }
             }
+
+            if (this.caretPosition <= content.length) {
+                this.field.get()?.setSelection(this.caretPosition)
+            }
+        } catch(err: Error) {}
+    }
+
+    override fun onFocusChange(view: View?, hasFocus: Boolean) {
+        if (hasFocus) {
+            tidyCaretPosition()
         }
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        val content = field.get()?.text.toString()
-        if (content?.length > 0) {
-            val isSuffixSymbol = content.last().isDigit() == false
-            if (isSuffixSymbol) {
-                this.caretPosition = min(this.caretPosition,content.length - 2)
-            }
-        }
-
+        tidyCaretPosition()
         return false
     }
 
