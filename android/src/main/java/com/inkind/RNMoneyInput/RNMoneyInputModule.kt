@@ -243,12 +243,8 @@ open class MoneyTextWatcher(
                 val isSuffixSymbol = content.last().isDigit() == false
                 if (isSuffixSymbol) {
                     this.caretPosition = min(this.caretPosition,content.length - 1)
-                }
-
-                if (content == "$0.00") {
-                    this.caretPosition = 5
-                } else if (this.caretPosition == 0) {
-                    this.caretPosition = 1
+                } else {
+                    this.caretPosition = content.length
                 }
             }
 
