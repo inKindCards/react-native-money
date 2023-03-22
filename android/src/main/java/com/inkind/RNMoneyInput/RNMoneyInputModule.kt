@@ -184,7 +184,6 @@ open class MoneyTextWatcher(
 
         // Create reference to end of number section of string
         val endOfInput = if (isSuffixSymbol) maskedText.length - 2 else maskedText.length + 1
-        println("Cursor: ${cursorPosition}")
 
         // Is the cursor on leading edge of numbers?
         val isLeadingEdge = if (isSuffixSymbol) cursorPosition >= inputText.length - 3 else cursorPosition >= inputText.length - 1
