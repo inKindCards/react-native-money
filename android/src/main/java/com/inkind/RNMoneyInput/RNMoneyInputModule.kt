@@ -8,7 +8,9 @@ import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.widget.EditText
 import com.facebook.react.bridge.*
-import com.facebook.react.uimanager.UIManagerModule
+import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.uimanager.UIManagerHelper
 import java.lang.ref.WeakReference
 import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
@@ -18,8 +20,14 @@ import kotlin.math.min
 import kotlin.math.pow
 
 fun ReadableMap.string(key: String): String? = this.getString(key)
+
+@ReactModule(name = RNMoneyInputModule.NAME)
 class RNMoneyInputModule(private val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
-    override fun getName() = "RNMoneyInput"
+    companion object {
+        const val NAME = "RNMoneyInput"
+    }
+    
+    override fun getName() = NAME
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun formatMoney(value: Double, locale: String?): String {
@@ -32,17 +40,28 @@ class RNMoneyInputModule(private val context: ReactApplicationContext) : ReactCo
     }
 
     @ReactMethod
-    fun initializeMoneyInput(tag: Int, options: ReadableMap) {
-        // We need to use prependUIBlock instead of addUIBlock since subsequent UI operations in
-        // the queue might be removing the view we're looking to update.
-        context.getNativeModule(UIManagerModule::class.java)!!.prependUIBlock { nativeViewHierarchyManager ->
-            // The view needs to be resolved before running on the UI thread because there's a delay before the UI queue can pick up the runnable.
-            val editText = nativeViewHierarchyManager.resolveView(tag) as EditText
-            context.runOnUiQueueThread {
+    fun initializeMoneyInput(tag: Int, options: ReadableMap) {        
+        // Use UiThreadUtil to run on UI thread
+        UiThreadUtil.runOnUiThread {
+            try {
+                // Try to get the UIManager using UIManagerHelper (works for both architectures)
+                val uiManager = UIManagerHelper.getUIManager(context, tag)
+                    
+                // Resolve the view
+                val view = uiManager.resolveView(tag)                
+                val editText = view as? EditText
+                
+                if (editText == null) {
+                    Log.e(NAME, "View $tag is not an EditText, it's a ${view?.javaClass?.simpleName}")
+                    return@runOnUiThread
+                }
+                
                 MoneyTextListener.install(
                     field = editText,
-                        locale = options.getString("locale")
+                    locale = options.getString("locale")
                 )
+            } catch (e: Exception) {
+                Log.e(NAME, "Error in UI thread: ${e.message}", e)
             }
         }
     }
@@ -51,7 +70,7 @@ class RNMoneyInputModule(private val context: ReactApplicationContext) : ReactCo
 internal class MoneyTextListener(
     field: EditText,
     locale: String?,
-    private val focusChangeListener: OnFocusChangeListener
+    private val focusChangeListener: OnFocusChangeListener?
 ) : MoneyTextWatcher(
     field = field, locale = locale
 ) {
@@ -69,7 +88,7 @@ internal class MoneyTextListener(
 
     override fun onFocusChange(view: View?, hasFocus: Boolean) {
         super.onFocusChange(view, hasFocus)
-        focusChangeListener.onFocusChange(view, hasFocus)
+        focusChangeListener?.onFocusChange(view, hasFocus)
     }
 
     companion object {
@@ -237,11 +256,11 @@ open class MoneyTextWatcher(
 
     fun tidyCaretPosition() {
         try {
-            val content = field.get()?.text.toString()
-            if (content?.length > 0) {
+            val content = field.get()?.text?.toString() ?: ""
+            if (content.length > 0) {
                 val isSuffixSymbol = content.last().isDigit() == false
                 if (isSuffixSymbol) {
-                    this.caretPosition = min(this.caretPosition,content.length - 1)
+                    this.caretPosition = min(this.caretPosition, content.length - 1)
                 } else {
                     this.caretPosition = content.length
                 }

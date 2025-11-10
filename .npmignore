@@ -1,44 +1,43 @@
+# Build artifacts
+android/build/
+android/.gradle/
+android/.idea/
+android/local.properties
+ios/build/
+ios/Pods/
+ios/*.xcworkspace/xcuserdata/
+ios/*.xcodeproj/xcuserdata/
 
-# OSX
-#
-.DS_Store
-
-# node.js
-#
+# Development files
 node_modules/
-npm-debug.log
-yarn-error.log
-package
-yarn.lock
+.DS_Store
+*.log
+.vscode/
+.idea/
 
-# typescript
-tsconfig.tsbuildinfo
-*.js.map
-tsconfig.json
+# Test files
+__tests__/
+__mocks__/
+*.test.ts
+*.test.tsx
+*.test.js
 
-# XCode
-build/
-Pods/
-*.xcworkspace
-Podfile
-Podfile.lock
+# Documentation (keep for npm)
+# README.md is included by default
 
-# Android/IntelliJ
-#
-./android/build/
-.idea
-.gradle
-local.properties
-*.iml
-gradle/
-gradlew
-gradlew.bat
+# Source TypeScript (dist is used instead)
+# But keep src/ for Codegen
+# index.tsx kept for reference
 
-# BUCK
-buck-out/
-\.buckd/
-*.keystore
-ios/Pods
+# Git
+.git/
+.gitignore
 
-CHANGELOG.md
-README.md
+# CI/CD
+.github/
+.circleci/
+
+# Misc
+*.tgz
+coverage/
+.env

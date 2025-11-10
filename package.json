@@ -1,9 +1,36 @@
 {
   "name": "@inkindcards/react-native-money",
-  "version": "1.0.7",
+  "version": "2.0.0",
   "description": "A fully native TextInput component that allows currency input with a right to left text aligment",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "files": [
+    "dist/",
+    "src/",
+    "android/src/",
+    "android/build.gradle",
+    "android/gradle/",
+    "android/gradlew",
+    "android/gradlew.bat",
+    "ios/*.swift",
+    "ios/*.h",
+    "ios/*.m",
+    "ios/*.mm",
+    "ios/*.xcodeproj/project.pbxproj",
+    "ios/*.xcworkspace/contents.xcworkspacedata",
+    "ios/*.xcworkspace/xcshareddata/",
+    "react-native-money.podspec",
+    "index.tsx",
+    "!android/build/",
+    "!android/.gradle/",
+    "!android/.idea/",
+    "!android/local.properties",
+    "!ios/build/",
+    "!ios/Pods/",
+    "!**/__tests__",
+    "!**/__mocks__",
+    "!**/xcuserdata/"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/inKindCards/react-native-money.git"
@@ -22,7 +49,9 @@
     "ios"
   ],
   "scripts": {
-    "prepare": "npx tsc",
+    "build": "tsc",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build",
     "format": "prettier --write ./index.tsx"
   },
   "devDependencies": {

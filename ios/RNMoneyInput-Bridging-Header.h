@@ -4,3 +4,4 @@
 #import <React/RCTBaseTextInputView.h>
 #import <React/RCTUITextField.h>
 #import <React/RCTBackedTextInputDelegateAdapter.h>
+#import "RNMoneyInputHelper.h"

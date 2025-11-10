@@ -9,6 +9,8 @@
 require 'json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
+
 Pod::Spec.new do |s|
     s.name             = "react-native-money"
     s.version          = package['version']
@@ -19,10 +21,38 @@ Pod::Spec.new do |s|
     s.author           = package['author']
     s.license          = { :type => 'MIT', :file => 'LICENSE' }
     s.source           = { :git => 'https://github.com/inKindCards/react-native-money.git', :tag => s.version.to_s }
-    s.platform      = :ios, "10.0"
-    s.source_files  = "ios/**/*.{h,m,swift}"
-    s.requires_arc  = true
-    s.swift_version = "5.0"
-    s.dependency 'React-Core'
-    s.dependency 'React-RCTText'
+    s.platforms        = { :ios => "11.0" }
+    s.source_files     = "ios/**/*.{h,m,mm,swift}"
+    s.requires_arc     = true
+    s.swift_version    = "5.0"
+    
+    # C++ settings needed for .mm files
+    s.pod_target_xcconfig = {
+      'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
+      'CLANG_CXX_LIBRARY' => 'libc++'
+    }
+    
+    # Use install_modules_dependencies helper to install the dependencies if React Native version >=0.71.0.
+    # See https://github.com/facebook/react-native/blob/febf6b7f33fdb4904669f99d795eba4c0f95d7bf/scripts/cocoapods/new_architecture.rb#L79.
+    if respond_to?(:install_modules_dependencies, true)
+      install_modules_dependencies(s)
+    else
+      s.dependency "React-Core"
+      s.dependency "React-RCTText"
+      
+      # Don't install the dependencies when we run `pod install` in the old architecture.
+      if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then
+        s.compiler_flags = folly_compiler_flags + " -DRCT_NEW_ARCH_ENABLED=1"
+        # Merge with existing pod_target_xcconfig
+        s.pod_target_xcconfig.merge!({
+            "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"",
+            "OTHER_CPLUSPLUSFLAGS" => "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1"
+        })
+        s.dependency "React-Codegen"
+        s.dependency "RCT-Folly"
+        s.dependency "RCTRequired"
+        s.dependency "RCTTypeSafety"
+        s.dependency "ReactCommon/turbomodule/core"
+      end
+    end
   end
