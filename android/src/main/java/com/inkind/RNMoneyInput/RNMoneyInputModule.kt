@@ -46,6 +46,10 @@ class RNMoneyInputModule(private val context: ReactApplicationContext) : ReactCo
             try {
                 // Try to get the UIManager using UIManagerHelper (works for both architectures)
                 val uiManager = UIManagerHelper.getUIManager(context, tag)
+                if (uiManager == null) {
+                    Log.e(NAME, "UIManager is null for tag $tag")
+                    return@runOnUiThread
+                }
                     
                 // Resolve the view
                 val view = uiManager.resolveView(tag)                
