@@ -76,8 +76,6 @@ class TextInputMask: NSObject, RCTBridgeModule, MoneyInputListener {
     }
     
     @objc func invalidate() {
-        print("MoneyInput: Bridge invalidated, cleaning up all delegates")
-        
         // Clear all delegates on the main thread
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }

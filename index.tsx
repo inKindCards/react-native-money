@@ -62,7 +62,6 @@ const MoneyInput = forwardRef<Handles, MoneyInputProps>(
     useEffect(() => {
       const timer = setTimeout(() => {
         if (!input.current) {
-          console.warn('MoneyInput: input ref is null')
           return
         }
 
@@ -80,13 +79,9 @@ const MoneyInput = forwardRef<Handles, MoneyInputProps>(
           }
 
           if (nodeId) {
-            console.log('MoneyInput: Initializing with nodeId:', nodeId)
             initializeMoneyInput(nodeId, {locale})
-          } else {
-            console.warn('MoneyInput: Could not get node handle')
           }
         } catch (e) {
-          console.error('MoneyInput: Error getting node handle:', e)
         }
       }, 100) // Small delay to ensure ref is mounted
 
@@ -117,7 +112,6 @@ const MoneyInput = forwardRef<Handles, MoneyInputProps>(
           onFocus?.(e)
         }}
         onChangeText={async label => {
-          console.log('Got Label:', label)
           const computedValue = extractValue(label, locale)
           setLabel(label)
           setValue(computedValue)

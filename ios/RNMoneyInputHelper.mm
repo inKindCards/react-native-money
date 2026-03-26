@@ -25,8 +25,6 @@ static BOOL MoneyInput_shouldBeRecycled(Class cls, SEL _cmd) {
 + (void)setupRecyclingPrevention {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSLog(@"MoneyInput: setupRecyclingPrevention called");
-        
 #ifdef RCT_NEW_ARCH_ENABLED
         // Only swizzle in Fabric (new architecture)
         Class textInputClass = NSClassFromString(@"RCTTextInputComponentView");
@@ -46,11 +44,7 @@ static BOOL MoneyInput_shouldBeRecycled(Class cls, SEL _cmd) {
                                             (IMP)MoneyInput_shouldBeRecycled,
                                             "B@:"); // B = BOOL, @ = id (self - class object), : = SEL
             }
-        } else {
-            NSLog(@"MoneyInput: RCTTextInputComponentView not found (expected in Fabric)");
         }
-#else
-        NSLog(@"MoneyInput: Fabric not enabled, skipping swizzle");
 #endif
     });
 }
