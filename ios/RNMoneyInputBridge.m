@@ -11,4 +11,6 @@ RCT_EXTERN__BLOCKING_SYNCHRONOUS_METHOD(extractValue:(nonnull NSString *)value
 RCT_EXTERN_METHOD(initializeMoneyInput:(nonnull NSNumber *)reactNode
                   options:(NSDictionary *)options)
 
+RCT_EXTERN_METHOD(cleanupMoneyInput:(nonnull NSNumber *)reactNode)
+
 @end
