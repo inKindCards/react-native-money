@@ -47,20 +47,33 @@ class TextInputMask: NSObject, RCTBridgeModule, MoneyInputListener {
             let locale = options["locale"] as? String
             let key = reactNode.stringValue
 
-            let existingDelegateType = type(of: textView.delegate as AnyObject)
-            let alreadyHasMask = self.masks[key] != nil
-            let viewAddr = UInt(bitPattern: ObjectIdentifier(view))
             let tfAddr = UInt(bitPattern: ObjectIdentifier(textView))
-            print("[MoneyInput] initializeMoneyInput(\(reactTag)): currentDelegate=\(existingDelegateType) alreadyTracked=\(alreadyHasMask) view=0x\(String(viewAddr, radix: 16)) textField=0x\(String(tfAddr, radix: 16))")
 
-            // Save the existing delegate (RCTBackedTextFieldDelegateAdapter set by RCTUITextField)
-            // and wrap it with a forwarding proxy. Do NOT subclass RCTBackedTextFieldDelegateAdapter
-            // — doing so would register a second UIControlEventEditingChanged target and cause
-            // _updateState to fire twice per keystroke, desyncing _mostRecentEventCount.
-            let wrapper = MoneyInputDelegateWrapper(originalDelegate: textView.delegate)
+            // No-op if our delegate is already set on this exact UITextField.
+            // Called from onFocus on every tap, so this fast-path is the common case.
+            if let existingMask = self.masks[key], textView.delegate === existingMask {
+                print("[MoneyInput] initializeMoneyInput(\(reactTag)): delegate already set (tf=0x\(String(tfAddr, radix: 16))), skipping")
+                return
+            }
+
+            let existingDelegateType = type(of: textView.delegate as AnyObject)
+            let viewAddr = UInt(bitPattern: ObjectIdentifier(view))
+            print("[MoneyInput] initializeMoneyInput(\(reactTag)): currentDelegate=\(existingDelegateType) view=0x\(String(viewAddr, radix: 16)) textField=0x\(String(tfAddr, radix: 16))")
+
+            // Determine the base delegate to wrap. When re-initializing after a freeze/unfreeze
+            // the UITextField's delegate has been reset to RCTBackedTextFieldDelegateAdapter (or it
+            // is a brand-new UITextField after recreation). In either case we use textView.delegate
+            // directly as the base so we don't accidentally wrap our own MoneyInputDelegate.
+            //
+            // Do NOT subclass RCTBackedTextFieldDelegateAdapter — doing so registers a second
+            // UIControlEventEditingChanged target and causes _updateState to fire twice per
+            // keystroke, desyncing _mostRecentEventCount.
+            let baseDelegate = textView.delegate
+            let wrapper = MoneyInputDelegateWrapper(originalDelegate: baseDelegate)
             self.listeners[key] = wrapper
 
-            let maskedDelegate = MoneyInputDelegate(localeIdentifier: locale) { (tf, value) in
+            let maskedDelegate = MoneyInputDelegate(localeIdentifier: locale) { [weak view] (tf, value) in
+                guard let view = view else { return }
                 let tfAddrNow = UInt(bitPattern: ObjectIdentifier(tf))
                 print("[MoneyInput] onChangeListener(\(reactTag)): textField=0x\(String(tfAddrNow, radix: 16)) value=\(value)")
                 RNMoneyInputHelper.sendChangeEvent(view, text: value)

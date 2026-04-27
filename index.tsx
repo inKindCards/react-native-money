@@ -107,6 +107,16 @@ const MoneyInput = forwardRef<Handles, MoneyInputProps>(
         ref={input}
         value={label}
         onFocus={e => {
+          // Re-attach delegate if it was detached by react-freeze (Freeze suspends/resumes
+          // the component tree, which can reset the UITextField delegate back to the default).
+          // initializeMoneyInput is a no-op if the delegate is already correctly set.
+          try {
+            const nodeId = findNodeHandle(input.current) ?? (input.current as any)?._nativeTag
+            if (nodeId) {
+              initializeMoneyInput(nodeId, {locale})
+            }
+          } catch (_) {}
+
           if (defaultLabel == '' && !rawValue) {
             setValue(0)
             setLabel(formatMoney(0, locale))
