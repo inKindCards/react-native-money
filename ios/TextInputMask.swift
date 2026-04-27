@@ -35,17 +35,23 @@ class TextInputMask: NSObject, RCTBridgeModule, MoneyInputListener {
             guard let self = self else { return }
 
             guard let view = self.bridge.uiManager.view(forReactTag: reactNode) else {
-                print("MoneyInput: Could not find view with tag \(reactTag)")
+                print("[MoneyInput] initializeMoneyInput(\(reactTag)): could not find view")
                 return
             }
 
             guard let textView = RNMoneyInputHelper.getTextField(from: view) else {
-                print("MoneyInput: Could not get UITextField from view")
+                print("[MoneyInput] initializeMoneyInput(\(reactTag)): could not get UITextField")
                 return
             }
 
             let locale = options["locale"] as? String
             let key = reactNode.stringValue
+
+            let existingDelegateType = type(of: textView.delegate as AnyObject)
+            let alreadyHasMask = self.masks[key] != nil
+            let viewAddr = UInt(bitPattern: ObjectIdentifier(view))
+            let tfAddr = UInt(bitPattern: ObjectIdentifier(textView))
+            print("[MoneyInput] initializeMoneyInput(\(reactTag)): currentDelegate=\(existingDelegateType) alreadyTracked=\(alreadyHasMask) view=0x\(String(viewAddr, radix: 16)) textField=0x\(String(tfAddr, radix: 16))")
 
             // Save the existing delegate (RCTBackedTextFieldDelegateAdapter set by RCTUITextField)
             // and wrap it with a forwarding proxy. Do NOT subclass RCTBackedTextFieldDelegateAdapter
@@ -54,7 +60,9 @@ class TextInputMask: NSObject, RCTBridgeModule, MoneyInputListener {
             let wrapper = MoneyInputDelegateWrapper(originalDelegate: textView.delegate)
             self.listeners[key] = wrapper
 
-            let maskedDelegate = MoneyInputDelegate(localeIdentifier: locale) { (_, value) in
+            let maskedDelegate = MoneyInputDelegate(localeIdentifier: locale) { (tf, value) in
+                let tfAddrNow = UInt(bitPattern: ObjectIdentifier(tf))
+                print("[MoneyInput] onChangeListener(\(reactTag)): textField=0x\(String(tfAddrNow, radix: 16)) value=\(value)")
                 RNMoneyInputHelper.sendChangeEvent(view, text: value)
             }
             maskedDelegate.listener = wrapper
@@ -63,6 +71,7 @@ class TextInputMask: NSObject, RCTBridgeModule, MoneyInputListener {
 
             RNMoneyInputHelper.tagTextField(asMoneyInput: textView)
             textView.delegate = maskedDelegate
+            print("[MoneyInput] initializeMoneyInput(\(reactTag)): delegate set to MoneyInputDelegate, wrapping \(existingDelegateType)")
         }
     }
 
@@ -74,24 +83,32 @@ class TextInputMask: NSObject, RCTBridgeModule, MoneyInputListener {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
 
+            print("[MoneyInput] cleanupMoneyInput(\(reactTag)): masks.hasKey=\(self.masks[key] != nil) listeners.hasKey=\(self.listeners[key] != nil)")
+
             defer {
                 self.masks.removeValue(forKey: key)
                 self.listeners.removeValue(forKey: key)
+                print("[MoneyInput] cleanupMoneyInput(\(reactTag)): removed from tracking dicts")
             }
 
             guard let view = self.bridge.uiManager.view(forReactTag: reactNode) else {
-                print("MoneyInput: cleanup — could not find view with tag \(reactTag)")
+                print("[MoneyInput] cleanupMoneyInput(\(reactTag)): could not find view — skipping delegate restore")
                 return
             }
 
             guard let textView = RNMoneyInputHelper.getTextField(from: view) else {
+                print("[MoneyInput] cleanupMoneyInput(\(reactTag)): could not get UITextField — skipping delegate restore")
                 return
             }
 
-            // Only restore if our delegate is still set (nothing else replaced it)
-            if textView.delegate === self.masks[key] {
-                textView.delegate = self.listeners[key]?.originalDelegate
-            }
+            let currentDelegateType = type(of: textView.delegate as AnyObject)
+            let originalDelegateType = type(of: self.listeners[key]?.originalDelegate as AnyObject)
+            print("[MoneyInput] cleanupMoneyInput(\(reactTag)): currentDelegate=\(currentDelegateType) restoring to \(originalDelegateType)")
+
+            // Always restore — iOS may have replaced our delegate with KCTextInputCompositeDelegate
+            // when the field became first responder. The identity check against self.masks[key]
+            // would fail in that case, leaving the field permanently without its original delegate.
+            textView.delegate = self.listeners[key]?.originalDelegate
 
             RNMoneyInputHelper.untagTextField(asMoneyInput: textView)
         }

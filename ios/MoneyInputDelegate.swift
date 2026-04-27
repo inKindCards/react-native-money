@@ -86,6 +86,8 @@ open class MoneyInputDelegate: NSObject, UITextFieldDelegate {
         shouldChangeCharactersIn range: NSRange,
         replacementString string: String
     ) -> Bool {
+        let tfAddr = UInt(bitPattern: ObjectIdentifier(textField))
+        print("[MoneyInput] shouldChangeCharactersIn: textField=0x\(String(tfAddr, radix: 16)) delegate=\(type(of: textField.delegate as AnyObject))")
         // Clean the text input
         let originalString = textField.text ?? ""
         let updatedText: String = replaceCharacters(inText: originalString, range: range, withCharacters: string)

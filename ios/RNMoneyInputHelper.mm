@@ -94,7 +94,8 @@ static BOOL MoneyInput_shouldBeRecycled(Class cls, SEL _cmd) {
     objc_setAssociatedObject(textField, MoneyInputTagKey, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-+ (void)sendChangeEvent:(UIView *)view text:(NSString *)text {    
++ (void)sendChangeEvent:(UIView *)view text:(NSString *)text {
+    NSLog(@"[MoneyInput] sendChangeEvent: viewClass=%@ viewAddr=%p text=%@", NSStringFromClass([view class]), view, text);
 #ifdef RCT_NEW_ARCH_ENABLED
     // For Fabric (new architecture)
     if ([view isKindOfClass:NSClassFromString(@"RCTTextInputComponentView")]) {
@@ -106,11 +107,13 @@ static BOOL MoneyInput_shouldBeRecycled(Class cls, SEL _cmd) {
             if (!textField) {
                 textField = [view valueForKey:@"backedTextInputView"];
             }
-            
+
+            NSLog(@"[MoneyInput] sendChangeEvent: foundTextField=%@ textFieldAddr=%p", textField ? @"YES" : @"NO", textField);
+
             if (textField) {
                 // Update the text field's text
                 textField.text = text;
-                
+
                 // Trigger the text field's editing changed event
                 // This will notify React Native of the change
                 [textField sendActionsForControlEvents:UIControlEventEditingChanged];
