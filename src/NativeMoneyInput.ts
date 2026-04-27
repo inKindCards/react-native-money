@@ -3,6 +3,7 @@
 
 export interface Spec {
   readonly initializeMoneyInput: (reactNode: number, options: Object) => void;
+  readonly cleanupMoneyInput: (reactNode: number) => void;
   readonly formatMoney: (value: number, locale?: string) => string;
   readonly extractValue: (label: string, locale?: string) => number;
 }

@@ -23,7 +23,7 @@ To fix this issue try these steps:
 `)
 }
 
-export const {initializeMoneyInput, extractValue, formatMoney} = RNMoneyInput
+export const {initializeMoneyInput, cleanupMoneyInput, extractValue, formatMoney} = RNMoneyInput
 
 type MoneyInputProps = TextInputProps & {
   value?: number
@@ -60,32 +60,35 @@ const MoneyInput = forwardRef<Handles, MoneyInputProps>(
 
     // Convert TextInput to MoneyInput native type
     useEffect(() => {
+      let initializedNodeId: number | null = null
+
       const timer = setTimeout(() => {
         if (!input.current) {
           return
         }
 
-        let nodeId = null
-
         try {
-          // Try multiple methods to get the node handle
-          // Method 1: findNodeHandle (works in both architectures but deprecated)
-          nodeId = findNodeHandle(input.current)
+          let nodeId: number | null = findNodeHandle(input.current)
 
           if (!nodeId) {
-            // Method 2: Direct _nativeTag access (new arch)
             // @ts-ignore
             nodeId = input.current._nativeTag
           }
 
           if (nodeId) {
             initializeMoneyInput(nodeId, {locale})
+            initializedNodeId = nodeId
           }
         } catch (e) {
         }
       }, 100) // Small delay to ensure ref is mounted
 
-      return () => clearTimeout(timer)
+      return () => {
+        clearTimeout(timer)
+        if (initializedNodeId) {
+          cleanupMoneyInput(initializedNodeId)
+        }
+      }
     }, [locale])
 
     // Create a false ref interface
