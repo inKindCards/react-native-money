@@ -6,7 +6,12 @@ import React, {
   useState,
 } from 'react'
 
-import {TextInput, TextInputProps, findNodeHandle, NativeModules} from 'react-native'
+import {
+  TextInput,
+  TextInputProps,
+  findNodeHandle,
+  NativeModules,
+} from 'react-native'
 
 // Import TurboModule spec
 import NativeMoneyInput from './src/NativeMoneyInput'
@@ -23,7 +28,12 @@ To fix this issue try these steps:
 `)
 }
 
-export const {initializeMoneyInput, cleanupMoneyInput, extractValue, formatMoney} = RNMoneyInput
+export const {
+  initializeMoneyInput,
+  cleanupMoneyInput,
+  extractValue,
+  formatMoney,
+} = RNMoneyInput
 
 type MoneyInputProps = TextInputProps & {
   value?: number
@@ -79,14 +89,15 @@ const MoneyInput = forwardRef<Handles, MoneyInputProps>(
             initializeMoneyInput(nodeId, {locale})
             initializedNodeId = nodeId
           }
-        } catch (e) {
-        }
+        } catch (e) {}
       }, 100) // Small delay to ensure ref is mounted
 
       return () => {
         clearTimeout(timer)
         if (initializedNodeId) {
-          cleanupMoneyInput(initializedNodeId)
+          try {
+            cleanupMoneyInput?.(initializedNodeId)
+          } catch {}
         }
       }
     }, [locale])
@@ -111,7 +122,9 @@ const MoneyInput = forwardRef<Handles, MoneyInputProps>(
           // the component tree, which can reset the UITextField delegate back to the default).
           // initializeMoneyInput is a no-op if the delegate is already correctly set.
           try {
-            const nodeId = findNodeHandle(input.current) ?? (input.current as any)?._nativeTag
+            const nodeId =
+              findNodeHandle(input.current) ??
+              (input.current as any)?._nativeTag
             if (nodeId) {
               initializeMoneyInput(nodeId, {locale})
             }

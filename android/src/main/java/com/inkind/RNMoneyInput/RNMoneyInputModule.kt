@@ -40,7 +40,7 @@ class RNMoneyInputModule(private val context: ReactApplicationContext) : ReactCo
     }
 
     @ReactMethod
-    fun initializeMoneyInput(tag: Int, options: ReadableMap) {        
+    fun initializeMoneyInput(tag: Int, options: ReadableMap) {
         // Use UiThreadUtil to run on UI thread
         UiThreadUtil.runOnUiThread {
             try {
@@ -50,22 +50,39 @@ class RNMoneyInputModule(private val context: ReactApplicationContext) : ReactCo
                     Log.e(NAME, "UIManager is null for tag $tag")
                     return@runOnUiThread
                 }
-                    
+
                 // Resolve the view
-                val view = uiManager.resolveView(tag)                
+                val view = uiManager.resolveView(tag)
                 val editText = view as? EditText
-                
+
                 if (editText == null) {
                     Log.e(NAME, "View $tag is not an EditText, it's a ${view?.javaClass?.simpleName}")
                     return@runOnUiThread
                 }
-                
+
                 MoneyTextListener.install(
                     field = editText,
                     locale = options.getString("locale")
                 )
             } catch (e: Exception) {
                 Log.e(NAME, "Error in UI thread: ${e.message}", e)
+            }
+        }
+    }
+
+    @ReactMethod
+    fun cleanupMoneyInput(tag: Int) {
+        UiThreadUtil.runOnUiThread {
+            try {
+                val uiManager = UIManagerHelper.getUIManager(context, tag)
+                if (uiManager == null) return@runOnUiThread
+
+                val view = uiManager.resolveView(tag)
+                val editText = view as? EditText ?: return@runOnUiThread
+
+                MoneyTextListener.uninstall(editText)
+            } catch (e: Exception) {
+                Log.e(NAME, "Error in cleanupMoneyInput: ${e.message}", e)
             }
         }
     }
@@ -112,6 +129,15 @@ internal class MoneyTextListener(
             field.setOnTouchListener(listener)
             field.setOnFocusChangeListener(listener)
             field.setTag(TEXT_CHANGE_LISTENER_TAG_KEY, listener)
+        }
+
+        fun uninstall(field: EditText) {
+            val listener = field.getTag(TEXT_CHANGE_LISTENER_TAG_KEY) as? MoneyTextWatcher
+                ?: return
+            field.removeTextChangedListener(listener)
+            field.setOnTouchListener(null)
+            field.setOnFocusChangeListener(null)
+            field.setTag(TEXT_CHANGE_LISTENER_TAG_KEY, null)
         }
     }
 }
