@@ -68,7 +68,12 @@ class TextInputMask: NSObject, RCTBridgeModule, MoneyInputListener {
             // Do NOT subclass RCTBackedTextFieldDelegateAdapter — doing so registers a second
             // UIControlEventEditingChanged target and causes _updateState to fire twice per
             // keystroke, desyncing _mostRecentEventCount.
-            let baseDelegate = textView.delegate
+            // If we've initialized this input before, reuse the stored original delegate
+            // (RCTBackedTextFieldDelegateAdapter). iOS 18+ may replace our delegate with
+            // KCTextInputCompositeDelegate when multiple inputs are active — capturing that
+            // as the base creates a circular forwarding chain that stack-overflows in
+            // textFieldShouldEndEditing: (INKIND-APP-82Z).
+            let baseDelegate = self.listeners[key]?.originalDelegate ?? textView.delegate
             let wrapper = MoneyInputDelegateWrapper(originalDelegate: baseDelegate)
             self.listeners[key] = wrapper
 
